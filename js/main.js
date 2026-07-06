@@ -240,17 +240,10 @@
     });
   }
 
-  /* ─── Header: scrolled state + hide on scroll down ─── */
+  /* ─── Header: always visible (sticky), blurred once scrolled ─── */
   const header = document.querySelector('.header');
   if (header) {
-    let lastY = 0;
-    const onScroll = () => {
-      const y = window.scrollY;
-      header.classList.toggle('is-scrolled', y > 10);
-      if (y > 500 && y > lastY + 6) header.classList.add('is-hidden');
-      else if (y < lastY - 4 || y < 200) header.classList.remove('is-hidden');
-      lastY = y;
-    };
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }
@@ -297,6 +290,25 @@
   const rotator = document.querySelector('.rotator');
   if (rotator) {
     const words = (rotator.dataset.words || 'Identify,Respond,Recover,Govern').split(',');
+
+    // Reserve the width of the longest word so line breaks never change
+    // while words cycle (prevents the hero from growing past 100vh).
+    const reserveWidth = () => {
+      const cs = getComputedStyle(rotator);
+      const probe = document.createElement('span');
+      probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;'
+        + 'font-family:' + cs.fontFamily + ';font-size:' + cs.fontSize + ';'
+        + 'font-weight:' + cs.fontWeight + ';letter-spacing:' + cs.letterSpacing + ';';
+      document.body.appendChild(probe);
+      let max = 0;
+      words.forEach(w => { probe.textContent = w; max = Math.max(max, probe.offsetWidth); });
+      probe.remove();
+      rotator.style.minWidth = Math.ceil(max) + 'px';
+    };
+    reserveWidth();
+    window.addEventListener('resize', reserveWidth);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(reserveWidth);
+
     if (reduceMotion) { rotator.textContent = words[0]; }
     else {
       let wi = 0, ci = words[0].length, deleting = true;
