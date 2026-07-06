@@ -492,6 +492,9 @@ h4 { font-size: 1.05rem; letter-spacing: -.01em; }
 .step__body h3 { margin-bottom: 8px; }
 .step__body p { color: var(--text-2); font-size: .96rem; }
 
+/* FAQ: left intro column stays pinned while the accordion scrolls */
+#faq .grid-2 > div:first-child { position: sticky; top: 110px; }
+
 /* ─── Accordion (FAQ) ─── */
 .accordion { display: flex; flex-direction: column; gap: 14px; }
 .accordion details {
@@ -696,6 +699,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   body { font-size: 15.5px; }
   .hero__visual { display: none; }
   .hero { max-height: none; }
+  #faq .grid-2 > div:first-child { position: static; }
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .bento > *, .bento .span-6, .bento .span-8 { grid-column: span 12; }
   .form-grid { grid-template-columns: 1fr; }
