@@ -177,7 +177,12 @@
 
   /* ─── Marquee ─── */
   document.querySelectorAll('[data-marquee]').forEach(track => {
+    // keep doubling so the -50% wrap point stays seamless on ultrawide screens
     track.innerHTML += track.innerHTML;
+    let guard = 0;
+    while (track.scrollWidth < track.parentElement.clientWidth * 2 && guard++ < 6) {
+      track.innerHTML += track.innerHTML;
+    }
     if (!hasGSAP || reduceMotion) return;
     const speed = parseFloat(track.dataset.marqueeSpeed || '26');
     const tween = gsap.to(track, { xPercent: -50, ease: 'none', duration: speed, repeat: -1 });
@@ -303,7 +308,8 @@
       let max = 0;
       words.forEach(w => { probe.textContent = w; max = Math.max(max, probe.offsetWidth); });
       probe.remove();
-      rotator.style.minWidth = Math.ceil(max) + 'px';
+      // +8px covers the ::after caret (3px) and its 5px margin
+      rotator.style.minWidth = Math.ceil(max + 8) + 'px';
     };
     reserveWidth();
     window.addEventListener('resize', reserveWidth);
